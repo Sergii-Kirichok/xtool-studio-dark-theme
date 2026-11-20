@@ -59,21 +59,25 @@ if (running && !viaPort) {
 } else {
   if (!running) spawn(EXE, [`--remote-debugging-port=${PORT}`], { detached: true, stdio: 'ignore' }).unref();
 
-  const attached = new Set();
+  const attached = new Map(); // target id -> WebSocket
+  const send = (ws, method, params = {}) => ws.readyState === 1 && ws.send(JSON.stringify({ id: Date.now() % 1e9, method, params }));
   const attach = t => {
-    attached.add(t.id);
     const ws = new WebSocket(t.webSocketDebuggerUrl);
+    attached.set(t.id, ws);
     ws.onopen = () => {
-      ws.send(JSON.stringify({ id: 1, method: 'Page.addScriptToEvaluateOnNewDocument', params: { source: inject } }));
-      ws.send(JSON.stringify({ id: 2, method: 'Runtime.evaluate', params: { expression: inject } }));
+      send(ws, 'Page.enable');
+      send(ws, 'Page.addScriptToEvaluateOnNewDocument', { source: inject });
+      send(ws, 'Runtime.evaluate', { expression: inject });
     };
     ws.onclose = ws.onerror = () => attached.delete(t.id);
   };
 
-  let seen = false, fails = 0;
+  let seen = false, fails = 0, tick = 0;
   while (true) {
     try {
       for (const t of await list()) if (t.type === 'page' && t.url.startsWith('atomm://') && !attached.has(t.id)) attach(t);
+      // Окно могло перезагрузиться, пока мы подключались, — повторяем внедрение (внутри стоит защита от повторов).
+      if (++tick % 4 === 0) for (const ws of attached.values()) send(ws, 'Runtime.evaluate', { expression: inject });
       seen = true; fails = 0;
     } catch {
       if (++fails > (seen ? 5 : 120)) process.exit(0); // программа закрыта
