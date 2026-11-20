@@ -10,6 +10,19 @@
   --color-xtc-16: #3d434d; --color-xtc-17: #323842;
 }
 
+/* 1a. Компоненты в стиле shadcn (--xt-foreground и др., значения в HSL): тоже только светлые.
+   Например, чёрная иконка камеры «Refresh background». Значения — тёмная палитра shadcn, фон под фон программы. */
+:root[data-theme="dark"] {
+  --xt-background: 0 0% 11%;          --xt-foreground: 0 0% 98%;
+  --xt-card: 0 0% 13%;                --xt-card-foreground: 0 0% 98%;
+  --xt-popover: 0 0% 13%;             --xt-popover-foreground: 0 0% 98%;
+  --xt-secondary: 240 3.7% 15.9%;     --xt-secondary-foreground: 0 0% 98%;
+  --xt-muted: 240 3.7% 15.9%;         --xt-muted-foreground: 240 5% 64.9%;
+  --xt-accent: 240 3.7% 15.9%;        --xt-accent-foreground: 0 0% 98%;
+  --xt-border: 240 3.7% 22%;          --xt-input: 240 3.7% 22%;
+  --xt-destructive: 0 62.8% 50%;      --xt-destructive-foreground: 0 0% 98%;
+}
+
 /* 1b. Правая панель редактора, блок параметров станка (поле Thickness и т.п.): светлые цвета зашиты в переменные. */
 :root[data-theme="dark"] .device-values-container {
   --panel-control-bg: var(--color-bg-input); --panel-control-bg-hover: var(--color-bg-hover); --panel-control-bg-focus: var(--color-bg-input);
