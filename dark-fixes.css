@@ -1,0 +1,15 @@
+/* Доделки встроенной тёмной темы xTool Studio (xcs-dark).
+   Всё действует только в тёмной теме — светлая не меняется.
+   Нашли ещё тёмное-на-тёмном или белое пятно? Добавьте правило сюда. */
+
+/* 1. Редактор: шкала --color-xtc-* объявлена только для светлой темы (на ней правая панель, Mode/Material и т.п.). */
+:root.dark, :root[data-theme="dark"] {
+  --color-xtc-1: #1d232a;  --color-xtc-2: #22272e;  --color-xtc-3: #2a2f37;  --color-xtc-4: #323842;
+  --color-xtc-5: #3d434d;  --color-xtc-6: #5f646c;  --color-xtc-7: #8a909a;  --color-xtc-8: #9a9ca1;
+  --color-xtc-9: #b9babe;  --color-xtc-10: #d5d8de; --color-xtc-12: #e6e8ec; --color-xtc-14: #9a9ca1;
+  --color-xtc-16: #3d434d; --color-xtc-17: #323842;
+}
+
+/* 2. Окно Device settings (плагин станка): цвета зашиты прямо в CSS. */
+:root[data-theme="dark"] .setting-common-form-content .form-item .form-text { color: var(--xt-color-text-primary); }
+:root[data-theme="dark"] .xt-bg-\[\#fff\] { background-color: #1f2227; }

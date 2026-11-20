@@ -8,18 +8,30 @@
 //
 // Запуск: двойной клик по start.vbs (без окна консоли) или: node xtool.mjs
 import { spawn, execSync } from 'node:child_process';
+import { readFileSync } from 'node:fs';
 
+const FIXES_CSS = readFileSync(new URL('./dark-fixes.css', import.meta.url), 'utf8');
 const EXE = process.env.XTOOL_EXE || `${process.env.LOCALAPPDATA}\\Programs\\xTool Studio\\xTool Studio.exe`;
 const PORT = 9333;
 
 const inject = `(() => {
-  if (window.__xtTheme || window.top !== window) return; window.__xtTheme = 1;
+  if (window.__xtTheme2 || window.top !== window) return; window.__xtTheme2 = 1;
   const ATTRS = ['data-theme', 'data-studio-theme'], CLASSES = ['dark', 'theme-xcs', 'theme-xcs-dark'];
   const sync = () => {
-    const root = document.documentElement; if (!root) return;
+    const root = document.documentElement; if (!root || !document.head) return;
     for (const host of document.querySelectorAll('wujie-app')) {
       for (const a of ATTRS) { const v = root.getAttribute(a); if (v !== host.getAttribute(a)) v == null ? host.removeAttribute(a) : host.setAttribute(a, v); }
       for (const c of CLASSES) host.classList.toggle(c, root.classList.contains(c));
+    }
+    // Обёртки компонентов (theme-xcs / theme-xcs-dark) в редакторе не обновляются при смене темы — приводим к теме <html>.
+    const dark = root.classList.contains('theme-xcs-dark');
+    for (const el of document.querySelectorAll('body .theme-xcs, body .theme-xcs-dark')) {
+      el.classList.toggle('theme-xcs-dark', dark); el.classList.toggle('theme-xcs', !dark);
+    }
+    // Доделки тёмной темы из dark-fixes.css (программа иногда пересобирает <head>, поэтому проверяем каждый раз).
+    if (!document.getElementById('xt-dark-fixes')) {
+      const s = document.createElement('style'); s.id = 'xt-dark-fixes'; s.textContent = ${JSON.stringify(FIXES_CSS)};
+      document.head.appendChild(s);
     }
   };
   setInterval(sync, 300); // ponytail: опрос дешевле, чем следить за атрибутами и появлением модулей
