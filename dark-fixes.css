@@ -10,6 +10,12 @@
   --color-xtc-16: #3d434d; --color-xtc-17: #323842;
 }
 
+/* 1b. Правая панель редактора, блок параметров станка (поле Thickness и т.п.): светлые цвета зашиты в переменные. */
+:root[data-theme="dark"] .device-values-container {
+  --panel-control-bg: var(--color-bg-input); --panel-control-bg-hover: var(--color-bg-hover); --panel-control-bg-focus: var(--color-bg-input);
+}
+:root[data-theme="dark"] .parameter-x-form { --panel-control-bg-focus: var(--color-bg-input); }
+
 /* 2. Окно Device settings (плагин станка): цвета зашиты прямо в CSS. */
 :root[data-theme="dark"] .setting-common-form-content .form-item .form-text { color: var(--xt-color-text-primary); }
 :root[data-theme="dark"] .xt-bg-\[\#fff\] { background-color: #1f2227; }

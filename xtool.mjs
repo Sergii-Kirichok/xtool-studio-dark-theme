@@ -15,7 +15,9 @@ const EXE = process.env.XTOOL_EXE || `${process.env.LOCALAPPDATA}\\Programs\\xTo
 const PORT = 9333;
 
 const inject = `(() => {
-  if (window.__xtTheme2 || window.top !== window) return; window.__xtTheme2 = 1;
+  if (window.top !== window) return;
+  window.__xtFixesCss = ${JSON.stringify(FIXES_CSS)}; // обновляется при каждом внедрении — правки dark-fixes.css подхватываются без перезапуска программы
+  if (window.__xtTheme2) return; window.__xtTheme2 = 1;
   const ATTRS = ['data-theme', 'data-studio-theme'], CLASSES = ['dark', 'theme-xcs', 'theme-xcs-dark'];
   const sync = () => {
     const root = document.documentElement; if (!root || !document.head) return;
@@ -29,10 +31,9 @@ const inject = `(() => {
       el.classList.toggle('theme-xcs-dark', dark); el.classList.toggle('theme-xcs', !dark);
     }
     // Доделки тёмной темы из dark-fixes.css (программа иногда пересобирает <head>, поэтому проверяем каждый раз).
-    if (!document.getElementById('xt-dark-fixes')) {
-      const s = document.createElement('style'); s.id = 'xt-dark-fixes'; s.textContent = ${JSON.stringify(FIXES_CSS)};
-      document.head.appendChild(s);
-    }
+    let s = document.getElementById('xt-dark-fixes');
+    if (!s) { s = document.createElement('style'); s.id = 'xt-dark-fixes'; document.head.appendChild(s); }
+    if (s.textContent !== window.__xtFixesCss) s.textContent = window.__xtFixesCss;
   };
   setInterval(sync, 300); // ponytail: опрос дешевле, чем следить за атрибутами и появлением модулей
 
